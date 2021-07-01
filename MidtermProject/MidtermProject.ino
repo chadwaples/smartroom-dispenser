@@ -29,7 +29,7 @@ File dataFile;
 
 //PIR Proximity infrared
 int pirPin = 21;
-int pirStat = 0;
+bool pirStat = 0;
 
 
 //Keypad
@@ -105,16 +105,11 @@ void setup() {
     for (;;); // Don't proceed, loop forever
   }
 
-  display.display();
-  delay(1000);
-  testdrawstyles1();
+  //  display.display();
+  //  delay(1000);
+  //  testdrawstyles1();
 
-  pixel.begin();
-  pixel.show();
-  myServo.attach(SERVOPIN);
-  tempC = bme.readTemperature();
-  tempF = (tempC * 1.8) + 32;
-  tempPixel();
+
   i = 0;
   r = 40;
 }
@@ -123,11 +118,28 @@ void loop() {
   pirStat = digitalRead(pirPin);
   if (pirStat == HIGH) {
     Serial.println("Hey there");
-    display.clearDisplay();
-    display.display();
-    testdrawstyles2();
+//    showPixel();
+//    randomColor = random(0x000000, 0xFFFFFF);
+//    display.clearDisplay();
+//    display.display();
+//    testdrawstyles2();
+//    for (int j = 0; j < TIMES_PLAYED; j++) {
+//      playNotes();
+//    }
+    //  while (true); //ends the music and lights.
   }
-  
+  else {
+    display.display();
+    delay(1000);
+    testdrawstyles1();
+    pixel.begin();
+    pixel.show();
+    myServo.attach(SERVOPIN);
+    tempC = bme.readTemperature();
+    tempF = (tempC * 1.8) + 32;
+    tempPixel();
+  }
+
   while (i < 7) {
     customKey = customKeypad.getKey();
     if (customKey) {
@@ -136,120 +148,113 @@ void loop() {
       i++;
     }
   }
-  
 
+}
   //  myServo.write(0);
   //  delay(1000);
   //  myServo.write(180);
 
 
-  delay(5000);
-  showPixel();
-  randomColor = random(0x000000, 0xFFFFFF);
-
-  for (int j = 0; j < TIMES_PLAYED; j++) {
-    //    playNotes();
-  }
-  //  while (true); //ends the music and lights.
-}
+  //  delay(5000);
+  //  showPixel();
+  //  randomColor = random(0x000000, 0xFFFFFF);
 
 
-
-void showPixel() {
-  for (int i = 0; i < PIXELCOUNT; i++) {
-    pixel.clear();
-    delay (100);
-    pixel.fill(random(0x000000, 0xFFFFFF), i, 7);
-    pixel.setBrightness(random(0, 60));
-    pixel.show();
-  }
-
-  pixel.clear();
-  pixel.show();
-
-
-  for (int r = 40; r >= 0; r--) {
-    pixel.clear();
-    delay (100);
-    pixel.fill(random(0x000000, 0xFFFFFF), r, 7);
-    pixel.setBrightness(random(0, 60));
-    pixel.show();
-  }
-  pixel.clear();
-}
-
-void tempPixel() {
-
-  position = tempF;
-  if (position >= 120) {
-    position = (maxPos);
-  }
-  if (position < 0) {
-    position = (basePos);
-  }
-
-  neoPixelPos = map(position, 0, 120, 6, 39);
-  pixel.fill(0xFF0000, 0, neoPixelPos);
-  pixel.setBrightness(150);
-  pixel.show();
-}
-
-void testdrawstyles1(void) {
-  display.clearDisplay();
-
-  display.setRotation(0);  // "display.setRotation();
-
-  display.setTextSize(2);             // Normal 1:1 pixel scale
-  display.setTextColor(SSD1306_WHITE);        // Draw white text
-  display.setCursor(0, 0);            // Start at top-left corner
-  display.printf("Want some candy");
-  
-  display.setTextSize(2);             // Draw 2X-scale text
-
-  display.display();
-  //  delay(2000);
-}
-
-void testdrawstyles2(void) {
-  display.clearDisplay();
-
-  display.setRotation(0);  // "display.setRotation();
-
-  display.setTextSize(2);             // Normal 1:1 pixel scale
-  display.setTextColor(SSD1306_WHITE);        // Draw white text
-  display.setCursor(0, 0);            // Start at top-left corner
-  display.printf("What is the number?");
-  
-  display.setTextSize(2);             // Draw 2X-scale text
-
-  display.display();
-  //  delay(2000);
-}
-
-void playNotes() {
-  // iterate over the notes of the melody:
-  for (int thisNote = 0; thisNote < NOTE_COUNT; thisNote++) {
-
-    // to calculate the note duration, take one second
-    // divided by the note type.
-    //e.g. quarter note = 1000 / 4, eighth note = 1000/8, etc.
-    int noteDuration = 1000 / noteDurations[thisNote];
-    tone(BUZZER_PIN, melody[thisNote], noteDuration);
-
-    // to distinguish the notes, set a minimum time between them.
-    // the note's duration + 30% seems to work well:
-    int pauseBetweenNotes = noteDuration * 1.1;
-    delay(pauseBetweenNotes);
-    // stop the tone playing:
-    noTone(BUZZER_PIN);
-  }
-}
-
-bool validate() {
-  for (int i = 0; i < 7; i++) {
-    if (codeStore[i] != password[i]) {
-      return false;
+  void showPixel() {
+    for (int i = 0; i < PIXELCOUNT; i++) {
+      pixel.clear();
+      delay (100);
+      pixel.fill(random(0x000000, 0xFFFFFF), i, 7);
+      pixel.setBrightness(random(0, 60));
+      pixel.show();
     }
-    return true;
+
+    pixel.clear();
+    pixel.show();
+
+
+    for (int r = 40; r >= 0; r--) {
+      pixel.clear();
+      delay (100);
+      pixel.fill(random(0x000000, 0xFFFFFF), r, 7);
+      pixel.setBrightness(random(0, 60));
+      pixel.show();
+    }
+    pixel.clear();
   }
-}
+
+  void tempPixel() {
+
+    position = tempF;
+    if (position >= 120) {
+      position = (maxPos);
+    }
+    if (position < 0) {
+      position = (basePos);
+    }
+
+    neoPixelPos = map(position, 0, 120, 6, 39);
+    pixel.fill(0xFF0000, 0, neoPixelPos);
+    pixel.setBrightness(150);
+    pixel.show();
+  }
+
+  void testdrawstyles1(void) {
+    display.clearDisplay();
+
+    display.setRotation(0);  // "display.setRotation();
+
+    display.setTextSize(2);             // Normal 1:1 pixel scale
+    display.setTextColor(SSD1306_WHITE);        // Draw white text
+    display.setCursor(0, 0);            // Start at top-left corner
+    display.printf("Want some candy");
+
+    display.setTextSize(2);             // Draw 2X-scale text
+
+    display.display();
+    //  delay(2000);
+  }
+
+  void testdrawstyles2(void) {
+    display.clearDisplay();
+
+    display.setRotation(0);  // "display.setRotation();
+
+    display.setTextSize(2);             // Normal 1:1 pixel scale
+    display.setTextColor(SSD1306_WHITE);        // Draw white text
+    display.setCursor(0, 0);            // Start at top-left corner
+    display.printf("What is the number?");
+
+    display.setTextSize(2);             // Draw 2X-scale text
+
+    display.display();
+    //  delay(2000);
+  }
+
+  void playNotes() {
+    // iterate over the notes of the melody:
+    for (int thisNote = 0; thisNote < NOTE_COUNT; thisNote++) {
+
+      // to calculate the note duration, take one second
+      // divided by the note type.
+      //e.g. quarter note = 1000 / 4, eighth note = 1000/8, etc.
+      int noteDuration = 1000 / noteDurations[thisNote];
+      tone(BUZZER_PIN, melody[thisNote], noteDuration);
+
+      // to distinguish the notes, set a minimum time between them.
+      // the note's duration + 30% seems to work well:
+      int pauseBetweenNotes = noteDuration * 1.1;
+      delay(pauseBetweenNotes);
+      // stop the tone playing:
+      noTone(BUZZER_PIN);
+    }
+  }
+
+  bool validate() {
+    for (int i = 0; i < 7; i++) {
+      if (codeStore[i] != password[i]) {
+        return false;
+      }
+      return true;
+    }
+  }
