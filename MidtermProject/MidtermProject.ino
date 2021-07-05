@@ -21,6 +21,7 @@
 #include <Adafruit_NeoPixel.h>
 #include <colors.h>
 #include <math.h>
+#include <hue.h>
 #include "tones.h"
 #include "WemoObj.h"
 
@@ -164,7 +165,7 @@ void loop() {
     dispense = validate();
     while ((!dispense) || (!timer.isTimerReady())) {
       i = 0;
-      while ((i < 7) || (i == 0) && (timer.isTimerReady())) {
+      while ((i < 7) || ((i == 0) && (timer.isTimerReady()))) {
         customKey = customKeypad.getKey();
         if (customKey) {
           Serial.println(customKey);
@@ -172,13 +173,13 @@ void loop() {
           i++;
         }
       }
-      while dispense = true {
+      if (dispense == true) {
         myServo.write(180);
         myWemo.switchON(3);
         delay (1000);
         myServo.write(0);
         myWemo.switchOFF(3);
-        break 
+        break; 
       }
     }
   }
