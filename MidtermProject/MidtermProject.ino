@@ -22,6 +22,7 @@
 #include <colors.h>
 #include <math.h>
 #include "tones.h"
+#include "WemoObj.h"
 
 #define SCREEN_WIDTH 128 // OLED display width, in pixels
 #define SCREEN_HEIGHT 64 // OLED display height, in pixels
@@ -101,16 +102,31 @@ float tempF;
 Adafruit_BME280 bme;
 unsigned status;
 
-//Ethernet
+//Ethernet & Wemo
 bool connection;
+WemoObj myWemo;
 
 void setup() {
   Serial.begin (9600);
-  connection = Ethernet.begin(mac);
+
+    //Open Serial Communication and wait for port to open:
+  Serial.begin(9600);
+  while (!Serial);
+
+  Serial.println("Starting Program");
+  
+  status = Ethernet.begin(mac);
   if (!status) {
     Serial.printf("failed to configure Ethernet using DHCP \n");
     //no point in continueing
     while (1);
+  }
+  //print your local IP address
+  Serial.print("My IP address:");
+  for (byte thisbyte = 0; thisbyte < 4; thisbyte++) {
+    //print value of each byte of the IP address
+    Serial.print(Ethernet.localIP()[thisbyte], DEC);
+    if (thisbyte < 3) Serial.print(".");
   }
 
   pinMode (pirPin, INPUT);
@@ -133,31 +149,39 @@ void setup() {
 
 void loop() {
   pirStat = digitalRead(pirPin);
+
   if (pirStat == HIGH) {
     Serial.println("Hey there");
-    randomColor = random(0x000000, 0xFFFFFF);
+    timer.startTimer(30000);
+    //    randomColor = random(0x000000, 0xFFFFFF);
+    showPixel();
     display.clearDisplay();
     display.display();
     testdrawstyles2();
     for (int j = 0; j < TIMES_PLAYED; j++) {
       playNotes();
     }
-    showPixel();
-  }
-  while (i < 7) {
-    customKey = customKeypad.getKey();
-    if (customKey) {
-      Serial.println(customKey);
-      codeStore[i] = customKey;
-      i++;
+    dispense = validate();
+    while ((!dispense) || (!timer.isTimerReady())) {
+      i = 0;
+      while ((i < 7) || (i == 0) && (timer.isTimerReady())) {
+        customKey = customKeypad.getKey();
+        if (customKey) {
+          Serial.println(customKey);
+          codeStore[i] = customKey;
+          i++;
+        }
+      }
+      while dispense = true {
+        myServo.write(180);
+        myWemo.switchON(3);
+        delay (1000);
+        myServo.write(0);
+        myWemo.switchOFF(3);
+        break 
+      }
     }
-    timer.startTimer(5000);
-    while (!timer.isTimerReady());
- 
   }
-
-  //    while (true); //ends the music and lights.
-
   else {
     display.display();
     delay(1000);
@@ -170,17 +194,6 @@ void loop() {
     tempPixel();
   }
 }
-
-
-
-//  myServo.write(0);
-//  delay(1000);
-//  myServo.write(180);
-
-
-//  delay(5000);
-//  showPixel();
-//  randomColor = random(0x000000, 0xFFFFFF);
 
 
 void showPixel() {
