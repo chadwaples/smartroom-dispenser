@@ -155,14 +155,17 @@ void loop() {
     Serial.println("Hey there");
     timer.startTimer(30000);
     //    randomColor = random(0x000000, 0xFFFFFF);
-    showPixel();
     display.clearDisplay();
     display.display();
     testdrawstyles2();
+    showPixel();
     for (int j = 0; j < TIMES_PLAYED; j++) {
       playNotes();
     }
+    
     dispense = validate();
+        
+    Serial.printf("%i", dispense);
     while ((!dispense) || (!timer.isTimerReady())) {
       i = 0;
       while ((i < 7) || ((i == 0) && (timer.isTimerReady()))) {
@@ -171,6 +174,7 @@ void loop() {
           Serial.println(customKey);
           codeStore[i] = customKey;
           i++;
+          customKey = 0x00; //null 
         }
       }
       if (dispense == true) {
@@ -218,7 +222,7 @@ void showPixel() {
     pixel.show();
   }
   pixel.clear();
-}
+  }
 
 void tempPixel() {
 
