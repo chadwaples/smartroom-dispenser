@@ -208,6 +208,10 @@ void loop() {
     tempC = bme.readTemperature();
     tempF = (tempC * 1.8) + 32;
     tempPixel();
+    setHue(0, true, random(0, 65353), 100 , 255);
+    setHue(1, true, random(0, 65353), 100 , 255);
+    setHue(2, true, random(0, 65353), 100 , 255);
+    setHue(3, true, random(0, 65353), 100 , 255);
     setHue(4, true, random(0, 65353), 100 , 255);
   }
 }
