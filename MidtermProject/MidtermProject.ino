@@ -110,12 +110,12 @@ WemoObj myWemo;
 void setup() {
   Serial.begin (9600);
 
-    //Open Serial Communication and wait for port to open:
+  //Open Serial Communication and wait for port to open:
   Serial.begin(9600);
   while (!Serial);
 
   Serial.println("Starting Program");
-  
+
   status = Ethernet.begin(mac);
   if (!status) {
     Serial.printf("failed to configure Ethernet using DHCP \n");
@@ -132,6 +132,9 @@ void setup() {
 
   pinMode (pirPin, INPUT);
   status = bme.begin(0x76);
+  Ethernet.begin(mac);
+  printIP();
+  Serial.printf("LinkStatus: %i \n", Ethernet.linkStatus());
 
 
   if (!display.begin(SSD1306_SWITCHCAPVCC, SCREEN_ADDRESS)) {
@@ -162,9 +165,10 @@ void loop() {
     for (int j = 0; j < TIMES_PLAYED; j++) {
       playNotes();
     }
-    
+
     dispense = validate();
-        
+    myServo.attach(SERVOPIN);
+
     Serial.printf("%i", dispense);
     while ((!dispense) || (!timer.isTimerReady())) {
       i = 0;
@@ -174,16 +178,18 @@ void loop() {
           Serial.println(customKey);
           codeStore[i] = customKey;
           i++;
-          customKey = 0x00; //null 
+          customKey = 0x00; //null
         }
       }
+      dispense = validate();
       if (dispense == true) {
         myServo.write(180);
         myWemo.switchON(3);
         delay (1000);
         myServo.write(0);
         myWemo.switchOFF(3);
-        break; 
+        delay(10000);
+        break;
       }
     }
   }
@@ -193,10 +199,10 @@ void loop() {
     testdrawstyles1();
     pixel.begin();
     pixel.show();
-    myServo.attach(SERVOPIN);
     tempC = bme.readTemperature();
     tempF = (tempC * 1.8) + 32;
     tempPixel();
+    setHue(4, true, random(0, 65353), 100 , 255);
   }
 }
 
@@ -222,7 +228,7 @@ void showPixel() {
     pixel.show();
   }
   pixel.clear();
-  }
+}
 
 void tempPixel() {
 
@@ -298,4 +304,12 @@ bool validate() {
     }
     return true;
   }
+}
+
+void printIP() {
+  Serial.printf("My IP address: ");
+  for (byte thisByte = 0; thisByte < 3; thisByte++) {
+    Serial.printf("%i.", Ethernet.localIP()[thisByte]);
+  }
+  Serial.printf("%i\n", Ethernet.localIP()[3]);
 }
