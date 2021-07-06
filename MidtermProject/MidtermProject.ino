@@ -312,8 +312,8 @@ bool validate() {
     if (codeStore[i] != password[i]) {
       return false;
     }
-    return true;
   }
+  return true;
 }
 
 void printIP() {
