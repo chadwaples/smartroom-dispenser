@@ -185,9 +185,15 @@ void loop() {
       if (dispense == true) {
         myServo.write(180);
         myWemo.switchON(3);
+        myWemo.switchON(0);
+        myWemo.switchON(1);
+        myWemo.switchON(2);
         delay (1000);
         myServo.write(0);
         myWemo.switchOFF(3);
+        myWemo.switchOFF(0);
+        myWemo.switchOFF(1);
+        myWemo.switchOFF(2);
         delay(10000);
         break;
       }
